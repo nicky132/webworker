@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="res">
+
+    </div>
+    <script>
+        // web worker应用场景
+        
+        // 在主线程中生成 Worker 线程很容易：
+        // var myWorker = new Worker(jsUrl, options)
+        let w = new Worker("./workers.js");
+        w.onmessage = function (event) {
+            var img = document.createElement("img");
+            img.src = window.URL.createObjectURL(event.data);
+            document.querySelector('#res').appendChild(img)
+        }
+    </script>
+</body>
+</html>
+
+
+
+<!-- 
+实战场景
+
+Web Worker我们可以当做计算器来用
+加密数据
+
+有些加解密的算法比较复杂，或者在加解密很多数据的时候，这会非常耗费计算资源，导致UI线程无响应，因此这是使用Web Worker的好时机，使用Worker线程可以让用户更加无缝的操作UI。
+
+预取数据
+
+有时候为了提升数据加载速度，可以提前使用Worker线程获取数据，因为Worker线程是可以是用 XMLHttpRequest 的。
+
+预渲染
+
+在某些渲染场景下，比如渲染复杂的canvas的时候需要大量的数据计算 这些计算的逻辑可以使用Worker线程来执行，也可以使用多个Worker线程，这里有个射线追踪的示例。
+
+复杂数据处理场景
+
+某些检索、排序、过滤、分析会非常耗费时间，这时可以使用Web Worker来进行，不占用主线程。
+
+预加载图片
+
+有时候一个页面有很多图片，或者有几个很大的图片的时候，如果业务限制不考虑懒加载，也可以使用Web Worker来加载图片， 
+
+  -->

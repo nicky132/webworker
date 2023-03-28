@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>屏幕 Record</title>
+    <style>
+        .container{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 20px;
+        }
+        #video {
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgb(172, 198, 212);
+
+        }
+        .btns div{
+            margin: 20px 30px;
+            width: 100px;
+            height: 40px;
+            line-height: 40px;
+            display: inline-block;
+            background: #2a2fd2;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            color: #fff;
+            font-size: 18px;
+        }
+        .btns div:hover{
+            background: rgb(133, 169, 235);
+            color: rgb(179, 202, 236);
+        }
+    </style>
+</head>
+<!-- 
+    revokeObjectURL()、URL.createObjectURL()
+    avigator.mediaDevices.getDisplayMedia()
+    new MediaRecorder() 
+-->
+<body>
+    <div class="container">
+        <video id="video" width="500px" height="400px" autoplay controls></video>
+        <div class="btns">
+            <div id="start">Start</div>
+            <div id="stop">Stop</div>
+            <div id="download">download</div>
+        </div>
+    </div>
+    <script>
+        const video = document.querySelector('#video');
+        const start = document.querySelector('#start');
+        const stop = document.querySelector('#stop');
+        const download = document.querySelector('#download');
+
+        const displayMediaOptions = {
+            video: {
+                cursor: "never"
+            },
+            audio: true
+        }
+
+        start.addEventListener('click',function(evt){
+            startRecord();
+        },false)
+
+        stop.addEventListener('click',function(evt){
+            stopCapture();
+        },false)
+
+        download.addEventListener('click',function(evt){
+            mydownload();
+        },false)
+
+
+        let stream;
+        let recorder;
+        let blobData;
+        async function startRecord() {
+            log = "";
+            try {
+                stream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+                // stream = await navigator.mediaDevices.getUserMedia({
+                //     video: {
+				// 		width: 400,
+				// 		height: 500
+				// 	}
+                // });
+            } catch (err) {
+                console.log('Error: ' + err);
+                return alert('capture is error or cancel!');
+            }
+            // 删除原来的blob
+            window.URL.revokeObjectURL(video.src);
+            video.srcObject = stream;
+            recorder = new MediaRecorder(stream);
+            recorder.start();
+
+        }
+
+        function stopCapture() {
+            // let tracks = video.srcObject.getTracks();
+            // tracks.forEach(track => {
+            //     track.stop();
+            // });
+            recorder.stop();
+
+            recorder.addEventListener('dataavailable',(event)=>{
+                console.log(event.data);
+                blobData = event.data;
+                let videoUrl = URL.createObjectURL(event.data,{type:'video/mp4'});
+                video.srcObject = null;
+                console.log(videoUrl);
+                video.src = videoUrl;
+            })
+
+        }
+
+        function mydownload(){
+
+            const name = new Date().toISOString().slice(0,19).replace('T',' ').replace(' ','_').replace(/:/g,'-');
+            // let videoUrl = URL.createObjectURL(blobData,{type:'video/mp4'});
+            const a = document.createElement('a');
+            a.href = video.src // video.src;
+            a.download = `${name}.ts`;
+            document.body.appendChild(a);
+
+            a.click();
+
+        }
+
+
+    </script>
+</body>
+
+</html>

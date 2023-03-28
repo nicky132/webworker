@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>语音播报</title>
+    <style>
+        div {
+            text-align: center;
+            margin-top: 54px;
+        }
+        button {
+            background: #4b4bde;
+            color: #fff;
+            border: none;
+            width: 90px;
+            height: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div>位置：百度科技园：F1层区域：4-6号电梯旁：人脸识别设备编号101，告警级别：一级，开始告警时间：2023-01-15：08点04分48秒</div>
+    <div>
+        <button onclick='playRadio()' id="played">播报语音</button>
+        <button onclick='pauseRadio()' id="pasued">暂停</button>
+        <button onclick='resumeRadio()' id="resumed">重新播报</button>
+        <button onclick='stopRadio()' id="stoped">停止</button>
+    </div>
+<script>
+	function playRadio(){
+	    voiceAnnouncements();
+	}
+	function pauseRadio(){
+	    window.speechSynthesis.pause();
+	}
+	function resumeRadio(){
+		window.speechSynthesis.resume();
+	}
+	function stopRadio(){
+		window.speechSynthesis.cancel();
+	}
+	
+    var speak;
+    //声音播报函数
+    function voiceAnnouncements() {
+        let text = '位置：百度科技园：F1：层：区域：4-6号电梯旁：人脸识别设备编号101，告警级别：一级，开始告警时间：2023-01-15：08点04分48秒';
+        speak = window.speechSynthesis,
+        speak = new SpeechSynthesisUtterance(text);
+        speak.lang = 'zh-cn';
+        speak.onend = function (event) {
+            console.log(event);
+        }
+        //开始阅读
+        window.speechSynthesis.speak(speak);
+    }
+</script>
+</body>
+</html>
